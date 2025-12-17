@@ -186,6 +186,28 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = MaterialTheme.typography.bodySmall.fontSize * 1.5
                         )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        val context = androidx.compose.ui.platform.LocalContext.current
+                        OutlinedButton(
+                            onClick = {
+                                val intent = android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse("https://github.com/Ciobert345/WakeUp")
+                                )
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("View on GitHub")
+                        }
                     }
                 }
             }
