@@ -44,7 +44,7 @@
 ## Installation
 
 ### Option 1: From Release APK
-1. Download the latest `app-release.apk` from the releases section
+1. Download the latest `WakeUp.apk` from the releases section
 2. Enable "Install from Unknown Sources" in your Android settings
 3. Open the APK file and follow the installation prompts
 
