@@ -8,6 +8,14 @@
 
 **WakeUp** is an Android application that allows you to remotely wake up network devices using Wake-on-LAN (WOL) technology and schedule automatic wake-up times. Perfect for managing home servers, workstations, and other WOL-enabled devices directly from your smartphone.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/1.jpg" alt="Home Screen" width="250"/>
+  <img src="screenshots/2.jpg" alt="Device Management" width="250"/>
+  <img src="screenshots/3.jpg" alt="Schedule Management" width="250"/>
+</p>
+
 ## Features
 
 ### 🖥️ Device Management
