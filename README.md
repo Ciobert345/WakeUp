@@ -168,5 +168,5 @@ For issues, questions, or feature requests, please open an issue in the reposito
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Last Updated**: December 2025
