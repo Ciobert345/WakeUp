@@ -37,14 +37,21 @@ fun ScheduleScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(pc?.name ?: "Schedules", fontWeight = FontWeight.SemiBold) },
+                title = { 
+                    Text(
+                        pc?.name ?: "Schedules", 
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
         },

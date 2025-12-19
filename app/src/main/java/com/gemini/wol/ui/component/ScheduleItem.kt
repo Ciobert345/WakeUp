@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gemini.wol.data.local.entity.ScheduleEntity
 import java.util.Locale
 
@@ -26,15 +27,15 @@ fun ScheduleItem(
     onEdit: (ScheduleEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(
+    Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onEdit(schedule) },
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
             contentColor = MaterialTheme.colorScheme.onSurface
-        )
+        ),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
     ) {
         Row(
             modifier = Modifier
@@ -59,7 +60,7 @@ fun ScheduleItem(
                     text = String.format(Locale.getDefault(), "%02d:%02d", schedule.timeHour, schedule.timeMinute),
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
-                    color = if (schedule.enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                    color = if (schedule.enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gemini.wol.data.local.entity.PcEntity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -31,16 +32,15 @@ fun PcItem(
     onScheduleClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    ElevatedCard(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header: Icon + Name + Status
@@ -50,27 +50,30 @@ fun PcItem(
             ) {
                 // Icon Box
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(11.dp),
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    modifier = Modifier.size(48.dp)
+                    tonalElevation = 2.dp,
+                    modifier = Modifier.size(44.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(14.dp))
 
                 // Name and MAC
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = pc.name,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = pc.mac.uppercase().chunked(2).joinToString(":"),
@@ -83,8 +86,11 @@ fun PcItem(
                 StatusBadge(isOnline = isOnline)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(14.dp))
+            Divider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                thickness = 0.5.dp
+            )
             Spacer(modifier = Modifier.height(12.dp))
 
             // Footer: Last Seen + Actions
@@ -99,49 +105,69 @@ fun PcItem(
                         text = "LAST SEEN",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 0.5.sp
                     )
                     Text(
                         text = if (pc.lastSeenEpoch != null) 
                             SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault()).format(Date(pc.lastSeenEpoch))
                         else "Never",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                     )
                 }
 
                 // Actions
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                     // Delete Button (Subtle)
-                    IconButton(onClick = onDeleteClick) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Delete Button (Subtle)
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(36.dp)
+                    ) {
                         Icon(
                             Icons.Outlined.Delete,
                             contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.size(20.dp)
                         )
                     }
 
                     // Schedule Button
                     FilledTonalIconButton(
                         onClick = onScheduleClick,
+                        modifier = Modifier.size(36.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
                         )
                     ) {
-                        Icon(Icons.Default.DateRange, contentDescription = "Schedule")
+                        Icon(
+                            Icons.Default.DateRange, 
+                            contentDescription = "Schedule",
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
 
-                    // Wake Button (Prominent)
+                    // Wake Button (Small & Prominent)
                     Button(
                         onClick = onWakeClick,
-                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        ),
+                        modifier = Modifier.height(36.dp)
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("WAKE")
+                        Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "WAKE", 
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }

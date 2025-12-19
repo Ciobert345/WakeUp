@@ -31,6 +31,17 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
             }
         }
+        
+        // Request exact alarm permission for Android 12+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                    data = android.net.Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            }
+        }
 
         setContent {
             val currentTheme = viewModel.currentTheme.collectAsState(initial = com.gemini.wol.data.repository.AppTheme.SYSTEM).value

@@ -33,7 +33,13 @@ fun AddEditPcScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(if (uiState.name.isBlank()) "Add PC" else "Edit PC", fontWeight = FontWeight.SemiBold) },
+                title = { 
+                    Text(
+                        if (uiState.name.isBlank()) "Add PC" else "Edit PC", 
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -45,7 +51,8 @@ fun AddEditPcScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
         }
@@ -56,10 +63,13 @@ fun AddEditPcScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            ElevatedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp),

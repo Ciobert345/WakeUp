@@ -1,8 +1,9 @@
 package com.gemini.wol.worker
 
 import android.content.Context
-
+import android.util.Log
 import com.gemini.wol.data.local.entity.PcEntity
+import com.gemini.wol.util.PermissionsHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -12,9 +13,27 @@ class ScheduleManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+    
+    companion object {
+        private const val TAG = "ScheduleManager"
+    }
+
 
     fun scheduleNextWake(pc: PcEntity, hour: Int, minute: Int, daysBitmap: Int) {
+        // Check if we have the necessary permissions
+        if (!PermissionsHelper.canScheduleExactAlarms(context)) {
+            Log.w(TAG, "Cannot schedule exact alarms - permission not granted")
+            // Still attempt to schedule, but it might fail or be inexact
+        }
+        
         val nextWakeTime = calculateNextWakeTime(hour, minute, daysBitmap)
+        
+        if (nextWakeTime == -1L) {
+            Log.e(TAG, "Failed to calculate next wake time for PC: ${pc.name}")
+            return
+        }
+        
+        Log.d(TAG, "Scheduling alarm for ${pc.name} at ${java.util.Date(nextWakeTime)}")
         
         val intent = android.content.Intent(context, com.gemini.wol.receiver.WakeReceiver::class.java).apply {
             putExtra("pcId", pc.id)
@@ -43,21 +62,23 @@ class ScheduleManager @Inject constructor(
                     nextWakeTime,
                     pendingIntent
                 )
+                Log.d(TAG, "Alarm scheduled with setExactAndAllowWhileIdle for ${pc.name}")
             } else {
                  alarmManager.setExact(
                     android.app.AlarmManager.RTC_WAKEUP,
                     nextWakeTime,
                     pendingIntent
                 )
+                Log.d(TAG, "Alarm scheduled with setExact for ${pc.name}")
             }
         } catch (e: SecurityException) {
             // Fallback for permission errors: use inexact alarm or just standard set
+            Log.e(TAG, "SecurityException scheduling alarm, falling back to inexact", e)
             alarmManager.set(
                 android.app.AlarmManager.RTC_WAKEUP,
                 nextWakeTime,
                 pendingIntent
             )
-            e.printStackTrace()
         }
     }
 

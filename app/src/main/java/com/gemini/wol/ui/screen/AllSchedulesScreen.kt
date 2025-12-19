@@ -33,16 +33,22 @@ fun AllSchedulesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Active Jobs", fontWeight = FontWeight.SemiBold) },
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        "Active Jobs", 
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
         }

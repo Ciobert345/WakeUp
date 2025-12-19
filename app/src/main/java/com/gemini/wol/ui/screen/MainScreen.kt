@@ -9,9 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -99,11 +102,14 @@ fun MainScreen(
                             }
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            selectedIconColor = if (MaterialTheme.colorScheme.primary.luminance() > 0.5f) Color.Black else Color.White,
                             selectedTextColor = MaterialTheme.colorScheme.primary,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            indicatorColor = if (MaterialTheme.colorScheme.primary.luminance() < 0.1f) 
+                                Color.White.copy(alpha = 0.12f) // Fallback for very dark/black colors
+                            else 
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                            unselectedIconColor = if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) Color.White.copy(alpha = 0.6f) else Color.Black.copy(alpha = 0.6f),
+                            unselectedTextColor = if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) Color.White.copy(alpha = 0.6f) else Color.Black.copy(alpha = 0.6f)
                         )
                     )
                 }

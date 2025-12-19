@@ -42,7 +42,7 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Hero Section with Gradient
+        // Hero Section with Gradient - Edge-to-Edge
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,33 +59,33 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding() // Protect content from status bar
+                    .statusBarsPadding() // Content padding for status bar, Box background is edge-to-edge
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Good to see you,",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                 )
                 Text(
                     text = "Control Center",
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.primary
                 )
                 
                 Spacer(modifier = Modifier.height(32.dp))
                 
                 // Quick Action Hero Button
-                ElevatedButton(
+                Button(
                     onClick = onNavigateToDevices,
                     modifier = Modifier.height(56.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
+                    )
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -94,17 +94,7 @@ fun HomeScreen(
             }
         }
 
-        // Stats Grid in a container overlapping the gradient header?
-        // Simple list logic for now.
-        
         Column(modifier = Modifier.padding(24.dp)) {
-            Text(
-                text = "Overview",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -130,11 +120,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             // Helpful Tip or Shortcut
-            ElevatedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.extraLarge,
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                     contentColor = MaterialTheme.colorScheme.onSurface
                 ),
                 onClick = onAddPcClick
@@ -146,14 +136,14 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .size(56.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
+                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.Add, 
                             contentDescription = null, 
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -175,7 +165,6 @@ fun HomeScreen(
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeStatCard(
@@ -186,11 +175,14 @@ fun HomeStatCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    ElevatedCard(
+    Card(
         onClick = onClick,
         modifier = modifier.height(140.dp),
-        shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+            contentColor = MaterialTheme.colorScheme.onSurface
+        )
     ) {
         Column(
             modifier = Modifier
@@ -202,7 +194,7 @@ fun HomeStatCard(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(CircleShape)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(11.dp))
                     .background(color.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {

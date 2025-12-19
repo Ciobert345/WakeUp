@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Check
@@ -17,9 +18,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gemini.wol.data.repository.AppTheme
 import com.gemini.wol.ui.component.ColorPickerDialog
@@ -63,9 +66,16 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.SemiBold) },
+                title = { 
+                    Text(
+                        "Settings", 
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
         }
@@ -74,52 +84,57 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 0.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(vertical = 4.dp, horizontal = 0.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Appearance Section
             item {
                 SettingsCategoryHeader("Appearance")
                 
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    shape = RoundedCornerShape(20.dp)
                 ) {
-                    Column {
+                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsItem(
                             icon = Icons.Default.Face,
-                            title = "App Theme",
+                            title = "Theme",
                             subtitle = when(currentTheme) {
-                                AppTheme.SYSTEM -> "System Default"
-                                AppTheme.LIGHT -> "Light Mode"
-                                AppTheme.DARK -> "Dark Mode"
-                                AppTheme.AMOLED -> "AMOLED Black"
+                                AppTheme.SYSTEM -> "Following system"
+                                AppTheme.LIGHT -> "Light mode"
+                                AppTheme.DARK -> "Dark mode"
+                                AppTheme.AMOLED -> "AMOLED black"
                             },
                             onClick = { showThemeDialog = true }
                         )
                         
                         Divider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                            thickness = 0.5.dp
                         )
                         
                         SettingsItem(
                             icon = Icons.Default.Edit,
                             title = "Accent Color",
-                            subtitle = "Customize application look",
+                            subtitle = "Personalize your app",
                             onClick = { showColorPicker = true },
                             trailingContent = {
-                                Box(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(accentColor))
-                                        .border(2.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), CircleShape)
-                                )
+                                Surface(
+                                    modifier = Modifier.size(38.dp),
+                                    shape = CircleShape,
+                                    color = Color(accentColor),
+                                    tonalElevation = 3.dp,
+                                    shadowElevation = 3.dp
+                                ) {
+                                    Box(modifier = Modifier.fillMaxSize())
+                                }
                             }
                         )
                     }
@@ -130,13 +145,15 @@ fun SettingsScreen(
             item {
                 SettingsCategoryHeader("About")
                 
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(
@@ -144,35 +161,52 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                shape = CircleShape,
+                                modifier = Modifier.size(60.dp),
+                                shape = RoundedCornerShape(16.dp),
                                 color = MaterialTheme.colorScheme.primaryContainer,
-                                modifier = Modifier.size(56.dp)
+                                tonalElevation = 4.dp
                             ) {
-                                Box(contentAlignment = Alignment.Center) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            brush = Brush.radialGradient(
+                                                colors = listOf(
+                                                    MaterialTheme.colorScheme.primaryContainer,
+                                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f)
+                                                )
+                                            )
+                                        )
+                                ) {
                                     Icon(
                                         imageVector = Icons.Default.Info,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.size(34.dp)
                                     )
                                 }
                             }
+                            
                             Spacer(modifier = Modifier.width(16.dp))
+                            
                             Column {
                                 Text(
                                     text = "WakeUp",
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Version 1.0.0",
+                                    text = "Version 1.0.1",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontWeight = FontWeight.Medium
                                 )
                                 Text(
                                     text = "by Robert Ciobanu",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                                 )
                             }
@@ -180,17 +214,24 @@ fun SettingsScreen(
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        Text(
-                            text = "Wake-on-LAN scheduler for your devices. Schedule automatic wake-ups and manage your network devices with ease.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            lineHeight = MaterialTheme.typography.bodySmall.fontSize * 1.5
-                        )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Text(
+                                text = "Wake-on-LAN scheduler for your devices. Schedule automatic wake-ups and manage your network devices with ease.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = 18.sp,
+                                modifier = Modifier.padding(14.dp)
+                            )
+                        }
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         
                         val context = androidx.compose.ui.platform.LocalContext.current
-                        OutlinedButton(
+                        Button(
                             onClick = {
                                 val intent = android.content.Intent(
                                     android.content.Intent.ACTION_VIEW,
@@ -198,7 +239,9 @@ fun SettingsScreen(
                                 )
                                 context.startActivity(intent)
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(vertical = 12.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Info,
@@ -206,7 +249,11 @@ fun SettingsScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("View on GitHub")
+                            Text(
+                                "View on GitHub", 
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         }
                     }
                 }

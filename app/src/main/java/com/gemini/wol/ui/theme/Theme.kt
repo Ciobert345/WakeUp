@@ -61,33 +61,44 @@ fun WakeOnLanSchedulerTheme(
     
     // Generate palette from accent color
     val seedColor = Color(accentColor)
+    val isDark = appTheme == AppTheme.DARK || appTheme == AppTheme.AMOLED || (appTheme == AppTheme.SYSTEM && isSystemInDarkTheme())
     
-    // Simple logic to generate readable content colors
-    // In a real production app we'd use Material Dynamic Colors library, but here we approximate for a quick "Premium" feel.
+    // Calculate a "Visible Primary" for containers/indicators in dark modes
+    // If the accent is too dark, we lighten it for visibility on dark backgrounds
+    val visiblePrimary = if (isDark && seedColor.luminance() < 0.2f) {
+        seedColor.copy(alpha = 0.4f).compositeOver(Color.White) // Lighten significantly
+    } else {
+        seedColor
+    }
+    
     val isSeedLight = seedColor.luminance() > 0.5f
     val onPrimaryColor = if (isSeedLight) Color.Black else Color.White
     
-    val primaryContainer = seedColor.copy(alpha = 0.2f).compositeOver(if(darkTheme) DarkBackground else Color.White)
-    val onPrimaryContainer = seedColor // Use the seed itself for text on container if legible, or darker
+    // Better container colors
+    val primaryContainerLight = seedColor.copy(alpha = 0.15f).compositeOver(Color.White)
+    val onPrimaryContainerLight = if (isSeedLight) seedColor.copy(alpha = 0.9f) else seedColor
     
-    val secondary = seedColor.copy(alpha = 0.8f) // Slightly softer
-    val tertiary = if (darkTheme) Color(0xFFEFB8C8) else Color(0xFF7D5260) // Complementary default or derived? Let's use generic.
+    val currentBg = if (appTheme == AppTheme.AMOLED) AmoledBackground else DarkBackground
+    val primaryContainerDark = visiblePrimary.copy(alpha = 0.25f).compositeOver(currentBg)
     
+    val secondary = seedColor.copy(alpha = 0.7f)
+    val tertiary = if (isDark) Color(0xFFEFB8C8) else Color(0xFF7D5260)
+
     val lightScheme = lightColorScheme(
         primary = seedColor,
         onPrimary = onPrimaryColor,
-        primaryContainer = primaryContainer,
-        onPrimaryContainer = if (darkTheme) Color.White else Color.Black, // Simplified
+        primaryContainer = primaryContainerLight,
+        onPrimaryContainer = onPrimaryContainerLight,
         secondary = secondary,
         onSecondary = if (isSeedLight) Color.Black else Color.White,
         tertiary = tertiary
     )
 
     val darkScheme = darkColorScheme(
-        primary = seedColor,
-        onPrimary = onPrimaryColor,
-        primaryContainer = seedColor.copy(alpha = 0.3f),
-        onPrimaryContainer = Color.White, // Usually light text on dark container
+        primary = visiblePrimary,
+        onPrimary = if (visiblePrimary.luminance() > 0.5f) Color.Black else Color.White,
+        primaryContainer = primaryContainerDark,
+        onPrimaryContainer = if (visiblePrimary.luminance() < 0.5f) Color.White else seedColor,
         secondary = secondary,
         onSecondary = if (isSeedLight) Color.Black else Color.White,
         tertiary = tertiary,
@@ -97,10 +108,10 @@ fun WakeOnLanSchedulerTheme(
     )
 
     val amoledScheme = darkColorScheme(
-        primary = seedColor,
-        onPrimary = onPrimaryColor,
-        primaryContainer = seedColor.copy(alpha = 0.3f),
-        onPrimaryContainer = Color.White,
+        primary = visiblePrimary,
+        onPrimary = if (visiblePrimary.luminance() > 0.5f) Color.Black else Color.White,
+        primaryContainer = visiblePrimary.copy(alpha = 0.25f).compositeOver(AmoledBackground),
+        onPrimaryContainer = if (visiblePrimary.luminance() < 0.5f) Color.White else seedColor,
         secondary = secondary,
         onSecondary = if (isSeedLight) Color.Black else Color.White,
         tertiary = tertiary,
@@ -109,34 +120,11 @@ fun WakeOnLanSchedulerTheme(
         onSurface = Color.White
     )
     
-    val colorScheme = when (appTheme) {
+    val finalScheme = when (appTheme) {
         AppTheme.LIGHT -> lightScheme
         AppTheme.DARK -> darkScheme
         AppTheme.AMOLED -> amoledScheme
-        AppTheme.SYSTEM -> {
-             if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                 val context = LocalContext.current
-                 if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-             } else {
-                 if (darkTheme) darkScheme else lightScheme
-             }
-        }
-    }
-    
-    // Logic to enforce custom accent.
-    // Use the custom scheme UNLESS dynamic color is explicitly requested AND we are in System theme.
-    // For this user request, we prioritize the manual accent color as "The User's Choice".
-    val finalScheme = if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && appTheme == AppTheme.SYSTEM) {
-        // If user wants system theme + dynamic, we give them dynamic. 
-        // But if we want to support "System Theme" with "Custom Accent", we should disable dynamic in the call from MainActivity.
-        colorScheme 
-    } else {
-        // Enforce the computed scheme
-        when (appTheme) {
-             AppTheme.AMOLED -> amoledScheme
-             AppTheme.DARK -> darkScheme
-             else -> if (darkTheme && appTheme == AppTheme.SYSTEM) darkScheme else lightScheme
-        }
+        AppTheme.SYSTEM -> if (isSystemInDarkTheme()) darkScheme else lightScheme
     }
 
     val view = LocalView.current
@@ -146,7 +134,8 @@ fun WakeOnLanSchedulerTheme(
             window.statusBarColor = Color.Transparent.toArgb()
             window.navigationBarColor = Color.Transparent.toArgb()
             
-            val isLight = (appTheme == AppTheme.LIGHT || (appTheme == AppTheme.SYSTEM && !darkTheme)) && appTheme != AppTheme.AMOLED
+            val surfaceLuminance = finalScheme.surface.luminance()
+            val isLight = surfaceLuminance > 0.5f && appTheme != AppTheme.AMOLED
             
             WindowCompat.setDecorFitsSystemWindows(window, false) // Enable Edge-to-Edge
             

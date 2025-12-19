@@ -13,8 +13,8 @@ android {
         applicationId = "com.gemini.wol"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -54,6 +54,18 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    
+    applicationVariants.all {
+        outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val buildType = buildType.name
+            output.outputFileName = if (buildType == "release") {
+                "WakeUp.apk"
+            } else {
+                "WakeUp-debug.apk"
+            }
         }
     }
 }
