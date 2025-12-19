@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,8 @@ fun HomeScreen(
                     )
                 )
         ) {
+            val heroTextColor = if (MaterialTheme.colorScheme.primaryContainer.luminance() > 0.5f) Color.Black else Color.White
+            
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -66,13 +69,13 @@ fun HomeScreen(
                 Text(
                     text = "Good to see you,",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                    color = heroTextColor.copy(alpha = 0.7f)
                 )
                 Text(
                     text = "Control Center",
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = heroTextColor
                 )
                 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -103,7 +106,7 @@ fun HomeScreen(
                     title = "Total Devices",
                     count = uiState.totalPcs.toString(),
                     icon = Icons.Default.List,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = Color(0xFF4285F4), // Consistent semantic Blue
                     modifier = Modifier.weight(1f),
                     onClick = onNavigateToDevices
                 )
@@ -111,7 +114,7 @@ fun HomeScreen(
                     title = "Active Jobs",
                     count = uiState.activeSchedules.toString(),
                     icon = Icons.Default.DateRange,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = Color(0xFF5C6BC0), // Soft Indigo
                     modifier = Modifier.weight(1f),
                     onClick = onShowAllSchedules 
                 )

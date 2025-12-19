@@ -23,7 +23,8 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "wol_database"
-        ).fallbackToDestructiveMigration() // For simplicity in dev
+        ).addCallback(AppDatabase.CALLBACK)
+         .fallbackToDestructiveMigration() // For simplicity in dev
          .build()
     }
 

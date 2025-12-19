@@ -3,6 +3,7 @@ package com.gemini.wol.worker
 import android.content.Context
 import android.util.Log
 import com.gemini.wol.data.local.entity.PcEntity
+import com.gemini.wol.data.local.entity.ScheduleEntity
 import com.gemini.wol.util.PermissionsHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
@@ -131,6 +132,13 @@ class ScheduleManager @Inject constructor(
             alarmManager.cancel(pendingIntent)
             pendingIntent.cancel()
         }
+    }
+    
+    fun cancelAllSchedulesForPc(schedules: List<ScheduleEntity>) {
+        schedules.forEach { schedule ->
+            cancelSchedule(schedule.pcId, schedule.timeHour, schedule.timeMinute)
+        }
+        Log.d(TAG, "All alarms cancelled for PC: ${schedules.firstOrNull()?.pcId}")
     }
     
     private fun getRequestCode(pcId: String, hour: Int, minute: Int): Int {
