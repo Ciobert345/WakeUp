@@ -9,8 +9,12 @@ data class PcEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val name: String,
     val mac: String,
-    val broadcastIp: String?,
-    val port: Int = 9,
+    // Renamed/Mapped from broadcastIp in migration
+    val internalIp: String?, 
+    val internalPort: Int = 9,
+    val externalIp: String? = null,
+    val externalPort: Int = 9,
+    val statusCheckPort: Int? = 80, // Default to 80 if not set, or user defined
     val lastSeenEpoch: Long? = null,
     val useRelay: Boolean = true
 )

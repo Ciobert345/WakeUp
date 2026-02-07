@@ -1,6 +1,8 @@
 package com.gemini.wol.ui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -23,6 +25,7 @@ fun AddEditPcScreen(
     viewModel: AddEditPcViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(uiState.saved) {
         if (uiState.saved) {
@@ -61,6 +64,7 @@ fun AddEditPcScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             Card(
@@ -75,6 +79,7 @@ fun AddEditPcScreen(
                     modifier = Modifier.padding(24.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
+                    // Basic Info
                     OutlinedTextField(
                         value = uiState.name,
                         onValueChange = { viewModel.onEvent(AddEditPcEvent.NameChanged(it)) },
@@ -94,23 +99,60 @@ fun AddEditPcScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
+
+                    Divider()
+
+                    // Internal Connection
+                    Text("Internal Connection (LAN)", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = uiState.internalIp,
+                            onValueChange = { viewModel.onEvent(AddEditPcEvent.InternalIpChanged(it)) },
+                            label = { Text("Internal IP") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = uiState.internalPort,
+                            onValueChange = { viewModel.onEvent(AddEditPcEvent.InternalPortChanged(it)) },
+                            label = { Text("Port") },
+                            modifier = Modifier.width(100.dp),
+                            singleLine = true
+                        )
+                    }
+
+                    // External Connection
+                    Text("External Connection (WAN)", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = uiState.externalIp,
+                            onValueChange = { viewModel.onEvent(AddEditPcEvent.ExternalIpChanged(it)) },
+                            label = { Text("External IP / Host") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = uiState.externalPort,
+                            onValueChange = { viewModel.onEvent(AddEditPcEvent.ExternalPortChanged(it)) },
+                            label = { Text("Port") },
+                            modifier = Modifier.width(100.dp),
+                            singleLine = true
+                        )
+                    }
+
+                    Divider()
+
+                    // Advanced / Status
+                    Text("Advanced Settings", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                     OutlinedTextField(
-                        value = uiState.broadcast,
-                        onValueChange = { viewModel.onEvent(AddEditPcEvent.BroadcastChanged(it)) },
-                        label = { Text("IP Address / Hostname") },
-                        supportingText = { Text("Used for Status Check & Unicast WoL") },
+                        value = uiState.statusPort,
+                        onValueChange = { viewModel.onEvent(AddEditPcEvent.StatusPortChanged(it)) },
+                        label = { Text("Status Check Port") },
+                        supportingText = { Text("TCP Port to check if device is online (e.g. 80, 3389)") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
-                    OutlinedTextField(
-                        value = uiState.port,
-                        onValueChange = { viewModel.onEvent(AddEditPcEvent.PortChanged(it)) },
-                        label = { Text("WoL Port") },
-                        isError = uiState.portError != null,
-                        supportingText = { uiState.portError?.let { Text(it) } },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
+                    
                     Row(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -123,7 +165,7 @@ fun AddEditPcScreen(
                         Column {
                             Text("Use Secure Relay", style = MaterialTheme.typography.bodyLarge)
                             Text(
-                                "Route packet through WakeOnLan Relay Server", 
+                                "Route packet through WakeOnLan Relay Server (Optional)", 
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

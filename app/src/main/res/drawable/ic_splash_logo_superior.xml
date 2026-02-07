@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <!-- 
+      For Android Splash Screen (API 31+):
+      Total size: 288dp (or 108dp, but 288dp allows for more detail in viewport)
+      Safe zone diameter for the logo: 192dp (roughly the center 2/3)
+    -->
+    <group
+        android:translateX="144"
+        android:translateY="144"
+        android:scaleX="2.2"
+        android:scaleY="2.2">
+        <!-- Centered Logo scaled up for clarity -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M11,11L11,11c0,1.1 -0.9,2 -2,2H-11c-1.1,0 -2,-0.9 -2,-2V-11c0,-1.1 0.9,-2 2,-2h20c1.1,0 2,0.9 2,2V11zM0,-25c-13.8,0 -25,11.2 -25,25s11.2,25 25,25s25,-11.2 25,-25S13.8,-25 0,-25zM0,20c-11,0 -20,-9 -20,-20s9,-20 20,-20s20,9 20,20S11,20 0,20z" />
+    </group>
+</vector>

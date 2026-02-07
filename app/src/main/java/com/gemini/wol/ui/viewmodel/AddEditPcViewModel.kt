@@ -29,8 +29,11 @@ class AddEditPcViewModel @Inject constructor(
                     _uiState.value = PcUiState(
                         name = pc.name,
                         mac = pc.mac,
-                        broadcast = pc.broadcastIp ?: "",
-                        port = pc.port.toString(),
+                        internalIp = pc.internalIp ?: "",
+                        internalPort = pc.internalPort.toString(),
+                        externalIp = pc.externalIp ?: "",
+                        externalPort = pc.externalPort.toString(),
+                        statusPort = pc.statusCheckPort?.toString() ?: "",
                         isRelay = pc.useRelay
                     )
                 }
@@ -42,8 +45,11 @@ class AddEditPcViewModel @Inject constructor(
         when(event) {
             is AddEditPcEvent.NameChanged -> _uiState.value = _uiState.value.copy(name = event.name)
             is AddEditPcEvent.MacChanged -> _uiState.value = _uiState.value.copy(mac = event.mac)
-            is AddEditPcEvent.BroadcastChanged -> _uiState.value = _uiState.value.copy(broadcast = event.broadcast)
-            is AddEditPcEvent.PortChanged -> _uiState.value = _uiState.value.copy(port = event.port)
+            is AddEditPcEvent.InternalIpChanged -> _uiState.value = _uiState.value.copy(internalIp = event.ip)
+            is AddEditPcEvent.InternalPortChanged -> _uiState.value = _uiState.value.copy(internalPort = event.port)
+            is AddEditPcEvent.ExternalIpChanged -> _uiState.value = _uiState.value.copy(externalIp = event.ip)
+            is AddEditPcEvent.ExternalPortChanged -> _uiState.value = _uiState.value.copy(externalPort = event.port)
+            is AddEditPcEvent.StatusPortChanged -> _uiState.value = _uiState.value.copy(statusPort = event.port)
             is AddEditPcEvent.RelayChanged -> _uiState.value = _uiState.value.copy(isRelay = event.isRelay)
             is AddEditPcEvent.Save -> savePc()
         }
@@ -54,8 +60,8 @@ class AddEditPcViewModel @Inject constructor(
         var isValid = true
         var nameError: String? = null
         var macError: String? = null
-        var portError: String? = null
-
+        // Simple validation, can be improved
+        
         if (currentState.name.isBlank()) {
             nameError = "Name cannot be empty"
             isValid = false
@@ -69,17 +75,17 @@ class AddEditPcViewModel @Inject constructor(
             isValid = false
         }
 
-        val port = currentState.port.toIntOrNull()
-        if (port == null || port !in 1..65535) {
-            portError = "Port must be 1-65535"
-            isValid = false
-        }
+        // Ports validation
+        val intPort = currentState.internalPort.toIntOrNull()
+        if (intPort == null || intPort !in 1..65535) isValid = false
+        
+        val extPort = currentState.externalPort.toIntOrNull()
+        if (extPort == null || extPort !in 1..65535) isValid = false
 
         if (!isValid) {
             _uiState.value = _uiState.value.copy(
                 nameError = nameError,
-                macError = macError,
-                portError = portError
+                macError = macError
             )
             return
         }
@@ -89,8 +95,11 @@ class AddEditPcViewModel @Inject constructor(
                 id = if (pcId != null && pcId != "new") pcId else java.util.UUID.randomUUID().toString(),
                 name = currentState.name,
                 mac = currentState.mac,
-                broadcastIp = if (currentState.broadcast.isBlank()) null else currentState.broadcast,
-                port = port ?: 9,
+                internalIp = currentState.internalIp.ifBlank { null },
+                internalPort = intPort ?: 9,
+                externalIp = currentState.externalIp.ifBlank { null },
+                externalPort = extPort ?: 9,
+                statusCheckPort = currentState.statusPort.toIntOrNull(),
                 useRelay = currentState.isRelay
             )
             if (pcId != null && pcId != "new") {
@@ -106,20 +115,25 @@ class AddEditPcViewModel @Inject constructor(
 data class PcUiState(
     val name: String = "",
     val mac: String = "",
-    val broadcast: String = "",
-    val port: String = "9",
+    val internalIp: String = "",
+    val internalPort: String = "9",
+    val externalIp: String = "",
+    val externalPort: String = "9",
+    val statusPort: String = "80",
     val isRelay: Boolean = false,
     val saved: Boolean = false,
     val nameError: String? = null,
-    val macError: String? = null,
-    val portError: String? = null
+    val macError: String? = null
 )
 
 sealed class AddEditPcEvent {
     data class NameChanged(val name: String): AddEditPcEvent()
     data class MacChanged(val mac: String): AddEditPcEvent()
-    data class BroadcastChanged(val broadcast: String): AddEditPcEvent()
-    data class PortChanged(val port: String): AddEditPcEvent()
+    data class InternalIpChanged(val ip: String): AddEditPcEvent()
+    data class InternalPortChanged(val port: String): AddEditPcEvent()
+    data class ExternalIpChanged(val ip: String): AddEditPcEvent()
+    data class ExternalPortChanged(val port: String): AddEditPcEvent()
+    data class StatusPortChanged(val port: String): AddEditPcEvent()
     data class RelayChanged(val isRelay: Boolean): AddEditPcEvent()
     object Save: AddEditPcEvent()
 }

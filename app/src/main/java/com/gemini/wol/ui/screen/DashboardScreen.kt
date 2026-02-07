@@ -19,6 +19,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +41,8 @@ fun DashboardScreen(
     val pcs by viewModel.pcs.collectAsState()
     val wakeResult by viewModel.wakeResult.collectAsState()
     val snackbarHostState = androidx.compose.runtime.remember { SnackbarHostState() }
+    
+    var pcToDelete by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<PcEntity?>(null) }
 
     // Show snackbar if wakeResult is not null
     if (wakeResult != null) {
@@ -45,6 +50,31 @@ fun DashboardScreen(
             snackbarHostState.showSnackbar(wakeResult!!)
             viewModel.clearMessage()
         }
+    }
+    
+    // Delete Confirmation Dialog
+    if (pcToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { pcToDelete = null },
+            title = { Text("Eliminare dispositivo") },
+            text = { Text("Sei sicuro di voler eliminare ${pcToDelete?.name}? Questa azione non può essere annullata.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pcToDelete?.let { viewModel.deletePc(it) }
+                        pcToDelete = null
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Elimina")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pcToDelete = null }) {
+                    Text("Annulla")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -113,16 +143,19 @@ fun DashboardScreen(
                     .fillMaxSize()
                     .padding(padding),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(pcs) { uiModel ->
+                items(
+                    items = pcs,
+                    key = { it.pc.id }
+                ) { uiModel ->
                     com.gemini.wol.ui.component.PcItem(
                         pc = uiModel.pc,
                         isOnline = uiModel.isOnline,
                         onWakeClick = { viewModel.wakePc(uiModel.pc) },
                         onClick = { onPcClick(uiModel.pc.id) },
                         onScheduleClick = { onScheduleClick(uiModel.pc.id) },
-                        onDeleteClick = { viewModel.deletePc(uiModel.pc) }
+                        onDeleteClick = { pcToDelete = uiModel.pc }
                     )
                 }
             }

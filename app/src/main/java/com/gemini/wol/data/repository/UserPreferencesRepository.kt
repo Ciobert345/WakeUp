@@ -13,7 +13,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 enum class AppTheme {
-    LIGHT,
     DARK,
     AMOLED,
     SYSTEM

@@ -20,6 +20,9 @@ interface PcDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPc(pc: PcEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPcs(pcs: List<PcEntity>)
+
     @Update
     suspend fun updatePc(pc: PcEntity)
 

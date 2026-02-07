@@ -29,7 +29,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="WakeUp"
-            android:theme="@style/Theme.WakeOnLanScheduler">
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

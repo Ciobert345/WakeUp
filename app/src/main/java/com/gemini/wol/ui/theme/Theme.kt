@@ -121,7 +121,6 @@ fun WakeOnLanSchedulerTheme(
     )
     
     val finalScheme = when (appTheme) {
-        AppTheme.LIGHT -> lightScheme
         AppTheme.DARK -> darkScheme
         AppTheme.AMOLED -> amoledScheme
         AppTheme.SYSTEM -> if (isSystemInDarkTheme()) darkScheme else lightScheme

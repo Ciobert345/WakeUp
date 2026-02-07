@@ -61,21 +61,21 @@ class WakeReceiver : BroadcastReceiver() {
                 val pc = pcRepository.getPcById(pcId)
 
                 if (result.isSuccess && pc != null) {
-                    Log.d(TAG, "Wake packet sent successfully to ${pc.name}")
+                    Log.d(TAG, "Wake packet(s) dispatched successfully for ${pc.name}")
                     
                     // Update Last Seen
                     pcRepository.updateLastSeen(pcId, System.currentTimeMillis())
 
-                    // Show Notification
+                    // Show Notification only on success
                     showNotification(context, pc.name)
                 } else {
-                    Log.w(TAG, "Failed to send wake packet or PC not found")
+                    Log.w(TAG, "Failed to dispatch wake packet for pcId: $pcId - No paths succeeded or PC missing")
                 }
 
-                // 2. Reschedule Next Occurrence
+                // 2. Reschedule Next Occurrence - ESSENTIAL: do this even if current wake failed
                 if (hour != -1 && minute != -1 && daysBitmap != -1 && pc != null) {
                     scheduleManager.scheduleNextWake(pc, hour, minute, daysBitmap)
-                    Log.d(TAG, "Next alarm scheduled for ${pc.name}")
+                    Log.d(TAG, "Next occurrences rescheduled for ${pc.name}")
                 }
 
             } catch (e: Exception) {

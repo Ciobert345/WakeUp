@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 
+      Superior Precision Splash Icon (v6)
+      - Viewport is 108x108 (Standard Android Icon Size)
+      - Internal "safe zone" is the 72x72 center square.
+      - The original bolt path (24x24) is centered at (54,54)
+      - Scale factor: 2.8 (Full safe zone usage for and industrial look)
+      - Translation: (54 - 12*2.8) = 20.4
+    -->
+    <group
+        android:translateX="20.4"
+        android:translateY="20.4"
+        android:scaleX="2.8"
+        android:scaleY="2.8">
+        <path
+            android:fillColor="@color/splash_logo_color"
+            android:pathData="M11,21h-1l1-7H7.5c-0.58,0 -1.01,-0.43 -1.01,-1.01V12c0,-0.35 0.13,-0.7 0.37,-0.93l6,-9h1l-1,7h3.5c0.58,0 1.01,0.43 1.01,1.01V11c0,0.35 -0.13,0.7 -0.37,0.93l-6,9z" />
+    </group>
+</vector>

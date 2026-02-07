@@ -21,6 +21,10 @@ class PcRepository @Inject constructor(
         pcDao.insertPc(pc)
     }
 
+    suspend fun insertPcs(pcs: List<PcEntity>) {
+        pcDao.insertPcs(pcs)
+    }
+
     suspend fun updatePc(pc: PcEntity) {
         pcDao.updatePc(pc)
     }

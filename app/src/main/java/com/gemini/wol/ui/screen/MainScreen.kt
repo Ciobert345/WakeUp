@@ -92,13 +92,13 @@ fun MainScreen(
                                 // Pop up to the start destination of the graph to
                                 // avoid building up a large stack of destinations
                                 popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = false
+                                    saveState = true
                                 }
                                 // Avoid multiple copies of the same destination when
                                 // reselecting the same item
                                 launchSingleTop = true
-                                // Disable state restoration to prevent animation glitches
-                                restoreState = false
+                                // Enable state restoration
+                                restoreState = true
                             }
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -129,10 +129,10 @@ fun MainScreen(
                      // Switch tab programmatically
                      navController.navigate(Screen.Devices.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = false
+                            saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = false
+                        restoreState = true
                      }
                     },
                     onAddPcClick = onAddPcClick,
@@ -147,7 +147,16 @@ fun MainScreen(
                 )
             }
             composable(Screen.Settings.route) {
-                SettingsScreen()
+                SettingsScreen(
+                    onNavigateToAppearance = { navController.navigate("settings_appearance") },
+                    onNavigateToData = { navController.navigate("settings_data") }
+                )
+            }
+            composable("settings_appearance") {
+                AppearanceSettingsScreen(onNavigateBack = { navController.navigateUp() })
+            }
+            composable("settings_data") {
+                DataManagementSettingsScreen(onNavigateBack = { navController.navigateUp() })
             }
         }
     }

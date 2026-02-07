@@ -31,10 +31,22 @@ class DashboardViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             pcRepository.allPcs.collect { entities ->
-                val uiModels = entities.map { PcUiModel(it) }
+                val currentStatuses = _pcs.value.associate { it.pc.id to it.isOnline }
+                val uiModels = entities.map { PcUiModel(it, currentStatuses[it.id]) }
                 _pcs.value = uiModels
-                // Don't auto-check statuses to avoid lag
-                // Users can manually refresh if needed
+                
+                // Trigger an immediate check for any new or unknown devices
+                if (uiModels.any { it.isOnline == null }) {
+                    refreshPcs()
+                }
+            }
+        }
+        
+        // Periodic polling loop (every 60 seconds)
+        viewModelScope.launch {
+            while (true) {
+                kotlinx.coroutines.delay(60000)
+                refreshPcs()
             }
         }
     }
@@ -44,12 +56,7 @@ class DashboardViewModel @Inject constructor(
             // Run all checks in parallel
             val updatedList = models.map { model ->
                 async {
-                    val ipToPing = model.pc.broadcastIp
-                    val isOnline = if (!ipToPing.isNullOrBlank()) {
-                        checkPcStatusUseCase(ipToPing)
-                    } else {
-                        false
-                    }
+                    val isOnline = checkPcStatusUseCase(model.pc)
                     model.copy(isOnline = isOnline)
                 }
             }.awaitAll() // Wait for all to finish

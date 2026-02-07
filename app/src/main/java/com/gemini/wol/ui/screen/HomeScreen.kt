@@ -1,16 +1,16 @@
 package com.gemini.wol.ui.screen
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,12 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gemini.wol.ui.viewmodel.HomeViewModel
+
+import com.gemini.wol.ui.component.getContrastColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,191 +35,219 @@ fun HomeScreen(
     onNavigateToDevices: () -> Unit,
     onAddPcClick: () -> Unit,
     onShowAllSchedules: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    settingsViewModel: com.gemini.wol.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val accentColor by settingsViewModel.accentColor.collectAsState()
+    
+    val hubColor = Color(accentColor)
+    val hubContentColor = getContrastColor(hubColor)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
     ) {
-        // Hero Section with Gradient - Edge-to-Edge
-        Box(
+        // Superior Elite Header
+        com.gemini.wol.ui.component.GradientHeader(
+            title = "Superior Hub",
+            subtitle = "Network Interface • Remote Console Active",
+            accentColor = hubColor,
+            isDark = true
+        )
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(280.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primaryContainer,
-                            MaterialTheme.colorScheme.background
-                        )
-                    )
-                )
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            val heroTextColor = if (MaterialTheme.colorScheme.primaryContainer.luminance() > 0.5f) Color.Black else Color.White
-            
-            Column(
+            // Horizontal Action Card - Elite Design
+            Surface(
+                onClick = onNavigateToDevices,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding() // Content padding for status bar, Box background is edge-to-edge
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Good to see you,",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = heroTextColor.copy(alpha = 0.7f)
-                )
-                Text(
-                    text = "Control Center",
-                    style = MaterialTheme.typography.displayMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = heroTextColor
-                )
-                
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                // Quick Action Hero Button
-                Button(
-                    onClick = onNavigateToDevices,
-                    modifier = Modifier.height(56.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Wake Devices", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                }
-            }
-        }
-
-        Column(modifier = Modifier.padding(24.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                HomeStatCard(
-                    title = "Total Devices",
-                    count = uiState.totalPcs.toString(),
-                    icon = Icons.Default.List,
-                    color = Color(0xFF4285F4), // Consistent semantic Blue
-                    modifier = Modifier.weight(1f),
-                    onClick = onNavigateToDevices
-                )
-                HomeStatCard(
-                    title = "Active Jobs",
-                    count = uiState.activeSchedules.toString(),
-                    icon = Icons.Default.DateRange,
-                    color = Color(0xFF5C6BC0), // Soft Indigo
-                    modifier = Modifier.weight(1f),
-                    onClick = onShowAllSchedules 
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Helpful Tip or Shortcut
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                onClick = onAddPcClick
+                    .fillMaxWidth()
+                    .height(110.dp),
+                shape = RoundedCornerShape(24.dp),
+                color = hubColor,
+                shadowElevation = 8.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = hubContentColor.copy(alpha = 0.2f),
+                        modifier = Modifier.size(44.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Add, 
-                            contentDescription = null, 
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(28.dp)
-                        )
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.PowerSettingsNew, null, tint = hubContentColor, modifier = Modifier.size(22.dp))
+                        }
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Add New Device", 
+                            "QUICK SEQUENCE",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Black,
+                            color = hubContentColor,
+                            letterSpacing = 1.sp
                         )
                         Text(
-                            text = "Configure Wake-on-LAN", 
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            "Broadcast Wake-on-LAN",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = hubContentColor.copy(alpha = 0.8f)
                         )
                     }
+                    Icon(Icons.Default.ChevronRight, null, tint = hubContentColor.copy(alpha = 0.6f))
                 }
             }
+
+            // Information Grid Section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    "INTELLIGENCE MATRIX",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    letterSpacing = 2.sp
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    IntelligenceTile(
+                        label = "Nodes",
+                        count = uiState.totalPcs.toString(),
+                        icon = Icons.Default.Dns,
+                        accentColor = Color(accentColor),
+                        modifier = Modifier.weight(1f)
+                    )
+                    IntelligenceTile(
+                        label = "Schedules",
+                        count = uiState.activeSchedules.toString(),
+                        icon = Icons.Default.Schedule,
+                        accentColor = Color(accentColor),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // Grid Actions
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    "TARGET CONFIGURATION",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    letterSpacing = 2.sp
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    EliteActionTile(
+                        label = "New Node",
+                        icon = Icons.Default.Add,
+                        onClick = onAddPcClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    EliteActionTile(
+                        label = "Seq History",
+                        icon = Icons.Default.Timeline,
+                        onClick = onShowAllSchedules,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun HomeStatCard(
-    title: String,
+fun IntelligenceTile(
+    label: String,
     count: String,
     icon: ImageVector,
-    color: Color,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    accentColor: Color,
+    modifier: Modifier = Modifier
 ) {
-    Card(
-        onClick = onClick,
+    Surface(
         modifier = modifier.height(140.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-            contentColor = MaterialTheme.colorScheme.onSurface
-        )
+        shape = RoundedCornerShape(28.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.15f))
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.Start
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(11.dp))
-                    .background(color.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = accentColor.copy(alpha = 0.12f),
+                modifier = Modifier.size(36.dp)
             ) {
-                Icon(icon, contentDescription = null, tint = color)
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(icon, null, tint = accentColor, modifier = Modifier.size(18.dp))
+                }
             }
             
             Column {
                 Text(
                     text = count,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = -(1).sp
                 )
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    text = label.toUpperCase(java.util.Locale.ROOT),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    letterSpacing = 1.sp
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun EliteActionTile(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.height(90.dp),
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(label, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
         }
     }
 }
