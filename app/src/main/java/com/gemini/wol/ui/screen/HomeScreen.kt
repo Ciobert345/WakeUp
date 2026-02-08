@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +42,28 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val accentColor by settingsViewModel.accentColor.collectAsState()
     
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+
+    // Launcher for Notification Permission
+    val notificationLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+        onResult = { _ -> viewModel.refreshPermissions() }
+    )
+
+    // Refresh permissions when app comes to foreground
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshPermissions()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+    
     val hubColor = Color(accentColor)
     val hubContentColor = getContrastColor(hubColor)
 
@@ -64,6 +87,21 @@ fun HomeScreen(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // Permission Warnings
+            PermissionWarningSection(
+                missingPermissions = uiState.missingPermissions,
+                onPermissionAction = { id, action ->
+                    if (id == "notifications") {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                            notificationLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    } else {
+                        action()
+                    }
+                },
+                accentColor = hubColor
+            )
+
             // Horizontal Action Card - Elite Design
             Surface(
                 onClick = onNavigateToDevices,
@@ -248,6 +286,88 @@ fun EliteActionTile(
             Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
             Spacer(modifier = Modifier.width(12.dp))
             Text(label, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun PermissionWarningSection(
+    missingPermissions: List<com.gemini.wol.util.PermissionsHelper.PermissionItem>,
+    onPermissionAction: (String, () -> Unit) -> Unit,
+    accentColor: Color
+) {
+    if (missingPermissions.isEmpty()) return
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            "SISTEMA ANALISI: CRITICITÀ RILEVATE",
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Black,
+            color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+            letterSpacing = 2.sp
+        )
+
+        missingPermissions.forEach { permission ->
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Warning, 
+                                    null, 
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = permission.title.toUpperCase(java.util.Locale.ROOT),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    
+                    Text(
+                        text = permission.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    
+                    Button(
+                        onClick = { onPermissionAction(permission.id, permission.action) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier.height(36.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("RISOLVI ORA", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Black)
+                    }
+                }
+            }
         }
     }
 }

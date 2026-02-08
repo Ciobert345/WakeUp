@@ -25,17 +25,38 @@ class SettingsViewModel @Inject constructor(
 
     private val gson = Gson()
 
+    data class ExportData(
+        val pcs: List<PcEntity>,
+        val schedules: List<com.gemini.wol.data.local.entity.ScheduleEntity>
+    )
+
     suspend fun exportDevices(): String {
         val pcs = pcRepository.allPcs.first()
-        return gson.toJson(pcs)
+        val schedules = pcRepository.allSchedules.first()
+        return gson.toJson(ExportData(pcs, schedules))
     }
 
     suspend fun importDevices(json: String): Boolean {
         return try {
-            val type = object : TypeToken<List<PcEntity>>() {}.type
-            val pcs: List<PcEntity> = gson.fromJson(json, type)
-            pcRepository.insertPcs(pcs)
-            true
+            // Support both old format (List<PcEntity>) and new format (ExportData)
+            try {
+                val exportData = gson.fromJson(json, ExportData::class.java)
+                if (exportData.pcs != null) {
+                    pcRepository.insertPcs(exportData.pcs)
+                    if (exportData.schedules != null) {
+                        pcRepository.insertSchedules(exportData.schedules)
+                        pcRepository.rescheduleAll()
+                    }
+                    return true
+                }
+            } catch (e: Exception) {
+                // Fallback to old format
+                val type = object : TypeToken<List<PcEntity>>() {}.type
+                val pcs: List<PcEntity> = gson.fromJson(json, type)
+                pcRepository.insertPcs(pcs)
+                return true
+            }
+            false
         } catch (e: Exception) {
             e.printStackTrace()
             false

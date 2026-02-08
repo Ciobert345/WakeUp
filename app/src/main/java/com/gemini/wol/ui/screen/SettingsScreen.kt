@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,6 +28,7 @@ import com.gemini.wol.ui.viewmodel.SettingsViewModel
 fun SettingsScreen(
     onNavigateToAppearance: () -> Unit,
     onNavigateToData: () -> Unit,
+    onNavigateToStability: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val accentColor by viewModel.accentColor.collectAsState()
@@ -69,7 +71,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        "System v2.0.0 Ready",
+                        "System v2.1.0 Ready",
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -111,47 +113,52 @@ fun SettingsScreen(
                         subtitle = "Import, export and backups",
                         onClick = onNavigateToData
                     )
+                    Divider(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                        thickness = 0.5.dp
+                    )
+                    SettingsItem(
+                        icon = Icons.Default.Security,
+                        title = "Background Stability",
+                        subtitle = "Persistent wake-up settings",
+                        onClick = onNavigateToStability
+                    )
                 }
             }
 
-            // Detailed About section with GitHub Link
+            // Compact About Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f))
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            modifier = Modifier.size(48.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(accentColor).copy(alpha = 0.1f)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Info, null, tint = Color(accentColor), modifier = Modifier.size(24.dp))
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text("WakeUp", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                            Text("v2.0.0 • Stable", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier.size(42.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(accentColor).copy(alpha = 0.1f)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Info, null, tint = Color(accentColor), modifier = Modifier.size(20.dp))
                         }
                     }
                     
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
                     
-                    Text(
-                        "Manage and wake your network devices with ease. A premium industrial power control center for your workspace.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 18.sp
-                    )
-                    
-                    Spacer(modifier = Modifier.height(20.dp))
-                    
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("WakeUp", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("v2.1.0 • Stable", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
+                    }
+
                     val context = androidx.compose.ui.platform.LocalContext.current
-                    Button(
+                    FilledTonalButton(
                         onClick = {
                             val intent = android.content.Intent(
                                 android.content.Intent.ACTION_VIEW,
@@ -159,13 +166,10 @@ fun SettingsScreen(
                             )
                             context.startActivity(intent)
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(accentColor))
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        modifier = Modifier.height(32.dp)
                     ) {
-                        Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Project Repository", fontWeight = FontWeight.Bold)
+                        Text("GITHUB", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
                     }
                 }
             }

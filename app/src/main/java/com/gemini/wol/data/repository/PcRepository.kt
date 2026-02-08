@@ -14,6 +14,7 @@ class PcRepository @Inject constructor(
     private val scheduleManager: ScheduleManager
 ) {
     val allPcs: Flow<List<PcEntity>> = pcDao.getAllPcs()
+    val allSchedules: Flow<List<com.gemini.wol.data.local.entity.ScheduleEntity>> = scheduleDao.getAllSchedules()
 
     suspend fun getPcById(id: String): PcEntity? = pcDao.getPcById(id)
 
@@ -23,6 +24,20 @@ class PcRepository @Inject constructor(
 
     suspend fun insertPcs(pcs: List<PcEntity>) {
         pcDao.insertPcs(pcs)
+    }
+
+    suspend fun insertSchedules(schedules: List<com.gemini.wol.data.local.entity.ScheduleEntity>) {
+        schedules.forEach { scheduleDao.insertSchedule(it) }
+    }
+
+    suspend fun rescheduleAll() {
+        val enabledSchedules = scheduleDao.getEnabledSchedules()
+        enabledSchedules.forEach { schedule ->
+            val pc = pcDao.getPcById(schedule.pcId)
+            if (pc != null) {
+                scheduleManager.scheduleNextWake(pc, schedule.timeHour, schedule.timeMinute, schedule.daysBitmap)
+            }
+        }
     }
 
     suspend fun updatePc(pc: PcEntity) {

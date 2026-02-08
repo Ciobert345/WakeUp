@@ -39,30 +39,6 @@ fun MainScreen(
         Screen.Settings
     )
     
-    // Request Notification Permission on Android 13+
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-        val context = androidx.compose.ui.platform.LocalContext.current
-        val permissionState = androidx.compose.runtime.remember {
-            androidx.core.content.ContextCompat.checkSelfPermission(
-                context,
-                android.Manifest.permission.POST_NOTIFICATIONS
-            )
-        }
-        
-        val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
-            contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
-            onResult = { isGranted ->
-                // Handle permission granted/denied if needed
-            }
-        )
-        
-        androidx.compose.runtime.LaunchedEffect(key1 = true) {
-            if (permissionState != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
-
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
@@ -149,7 +125,8 @@ fun MainScreen(
             composable(Screen.Settings.route) {
                 SettingsScreen(
                     onNavigateToAppearance = { navController.navigate("settings_appearance") },
-                    onNavigateToData = { navController.navigate("settings_data") }
+                    onNavigateToData = { navController.navigate("settings_data") },
+                    onNavigateToStability = { navController.navigate("settings_stability") }
                 )
             }
             composable("settings_appearance") {
@@ -157,6 +134,9 @@ fun MainScreen(
             }
             composable("settings_data") {
                 DataManagementSettingsScreen(onNavigateBack = { navController.navigateUp() })
+            }
+            composable("settings_stability") {
+                StabilitySettingsScreen(onNavigateBack = { navController.navigateUp() })
             }
         }
     }
