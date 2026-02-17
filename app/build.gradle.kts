@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    namespace = "com.gemini.wol"
+    namespace = "com.ciobert.wol"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.gemini.wol"
+        applicationId = "com.ciobert.wol"
         minSdk = 26
         targetSdk = 34
-        versionCode = 5
-        versionName = "2.1.0"
+        versionCode = 7
+        versionName = "2.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -80,6 +80,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+
+
+    implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.compose.ui:ui")
