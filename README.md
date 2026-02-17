@@ -167,6 +167,3 @@ This project is provided as-is for personal use.
 For issues, questions, or feature requests, please open an issue in the repository.
 
 ---
-
-**Version**: 1.0.1  
-**Last Updated**: December 2025
